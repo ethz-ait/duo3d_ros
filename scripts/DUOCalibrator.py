@@ -379,6 +379,7 @@ class DUOCalibrator(QMainWindow):
         self.open_calibration_file()
         self.calib['R_lr'] = R.T.tolist()
         self.calib['R_rl'] = R.tolist()
+        self.calib['r_lr'] = (-R.T * T).tolist()
 
         self.calib['CameraParameters1']['DistortionModel'] = 'plumb_bob'  # opencv parameters are the same as matlab
         self.calib['CameraParameters1']['FocalLength'][0] = float(mtxL[0][0])
