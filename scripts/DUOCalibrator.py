@@ -337,13 +337,13 @@ class DUOCalibrator(QMainWindow):
             return
 
         self.status_bar_update.emit('Calibrating left camera intrinsics')
-        rmsL, mtxL, distL, rvecsL, tvecsL = cv2.calibrateCamera(self.object_points, self.corners['left'], (self.res_width, self.res_height), flags=cv2.CALIB_ZERO_TANGENT_DIST)
+        rmsL, mtxL, distL, rvecsL, tvecsL = cv2.calibrateCamera(self.object_points, self.corners['left'], (self.res_width, self.res_height), None, None, flags=cv2.CALIB_ZERO_TANGENT_DIST)
         print('Left camera RMS reprojection error {}'.format(rmsL))
         if rmsL > 1:
             rospy.logwarn('The reprojection error is very large. Take more images from different view points. Make sure That the checkerboard covers all parts of the image in some frames. Take images from close up, far away and shallow angles of attack.')
 
         self.status_bar_update.emit('Calibrating right camera intrinsics')
-        rmsR, mtxR, distR, rvecsR, tvecsR = cv2.calibrateCamera(self.object_points, self.corners['right'], (self.res_width, self.res_height), flags=cv2.CALIB_ZERO_TANGENT_DIST)
+        rmsR, mtxR, distR, rvecsR, tvecsR = cv2.calibrateCamera(self.object_points, self.corners['right'], (self.res_width, self.res_height), None, None, flags=cv2.CALIB_ZERO_TANGENT_DIST)
         print('Right camera RMS reprojection error {}'.format(rmsR))
         if rmsR > 1:
             rospy.logwarn('The reprojection error is very large. Take more images from different view points. Make sure That the checkerboard covers all parts of the image in some frames. Take images from close up, far away and shallow angles of attack.')
@@ -352,16 +352,15 @@ class DUOCalibrator(QMainWindow):
         rmsStereo, cameraMatrix1, distCoeffs1, cameraMatrix2, distCoeffs2, R, T, E, F = cv2.stereoCalibrate(self.object_points,
                                                                                                             self.corners['left'],
                                                                                                             self.corners['right'],
+                                                                                                            mtxL,
+                                                                                                            distL,
+                                                                                                            mtxR,
+                                                                                                            distR,
                                                                                                             (self.res_width, self.res_height),
-                                                                                                            cameraMatrix1=mtxL,
-                                                                                                            distCoeffs1=distL,
-                                                                                                            cameraMatrix2=mtxR,
-                                                                                                            distCoeffs2=distR,
                                                                                                             flags=cv2.CALIB_FIX_INTRINSIC + cv2.CALIB_ZERO_TANGENT_DIST)
         print('Stereo RMS reprojection error {}'.format(rmsStereo))
         if rmsStereo > 1:
             rospy.logwarn('The reprojection error is very large. Take more images from different view points. Make sure That the checkerboard covers all parts of the image in some frames. Take images from close up, far away and shallow angles of attack.')
-
         thresh = 1  # threshold for RMS warning
         if rmsL > thresh or rmsR > thresh or rmsStereo > thresh:
             reply = QMessageBox.warning(self, "High reprojection error",
