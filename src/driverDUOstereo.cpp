@@ -208,7 +208,7 @@ void DUOStereoDriver::publishTempData(const sensor_msgs::Temperature &temp_msg)
 bool DUOStereoDriver::initializeDUO()
 {
 	// Implement libCheck() later to tell user they need to update their DUO SDK
-	ROS_INFO("DUOLib Version: %s", GetLibVersion());
+	ROS_INFO("DUOLib Version: %s", GetDUOLibVersion());
 
 
 	std::string 	deviceName;
@@ -322,7 +322,7 @@ bool DUOStereoDriver::initializeDUO()
 	 * Select 752x480 resolution with no binning capturing at 30FPS
 	 * These values (width, height, FPS) should be ROS Params
 	 */
-	if(EnumerateResolutions(&_duoResolutionInfo, 1, resWidth, resHeight, binning, framesPerSecond))
+	if(EnumerateDUOResolutions(&_duoResolutionInfo, 1, resWidth, resHeight, binning, framesPerSecond))
 	{
 		ROS_INFO("Resolution Parameters Check: PASSED");
 
